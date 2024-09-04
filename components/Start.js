@@ -8,7 +8,7 @@ const Start = ({ navigation }) => {
     const [backgroundColor, setBackgroundColor] = useState('#090C08');
 
   const colors = ['#090C08', '#474056', '#8A95A5', '#B9C6AE'];
-
+    // handle color selection
     const handleStartChat = () => {
         if (name.trim()) {
             navigation.navigate('Chat', { name: name, backgroundColor: backgroundColor });
@@ -16,6 +16,7 @@ const Start = ({ navigation }) => {
         };
 
   return (
+    // add a background image to the start screen
     <ImageBackground
       source={require('../img/BackgroundImage.png')}
       resizeMode="cover"
@@ -29,6 +30,7 @@ const Start = ({ navigation }) => {
         value={name}
         onChangeText={setName}
       />
+      
       <Text style={styles.colorSelectionText}>Choose Background Color:</Text>
         <View style={styles.colorSelection}>
           {colors.map((color) => (
