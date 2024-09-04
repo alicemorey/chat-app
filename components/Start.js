@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, TextInput, Text, TouchableOpacity, ImageBackground } from 'react-native';
+import { KeyboardAvoidingView, Platform } from 'react-native';
 
 
 // start component
@@ -22,7 +23,10 @@ const Start = ({ navigation }) => {
       resizeMode="cover"
       style={styles.backgroundImage}
     >
-    <View style={styles.container}>
+    <KeyboardAvoidingView 
+      style={styles.container} 
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
       <Text style={styles.title}>Chat App</Text>
        <TextInput
         style={styles.input}
@@ -48,7 +52,7 @@ const Start = ({ navigation }) => {
       <TouchableOpacity style={styles.button} onPress={handleStartChat}>
     <Text style={styles.buttonText}>Start Chatting</Text>
     </TouchableOpacity>
-    </View>
+    </KeyboardAvoidingView>
     </ImageBackground>
   );
 };

@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { StyleSheet, View, Platform, KeyboardAvoidingView } from 'react-native';
 import { Bubble, GiftedChat } from "react-native-gifted-chat";
-
+ 
+// chat component
 const Chat = ({ route, navigation }) => {
   const [messages, setMessages] = useState([]);
   const { name } = route.params;
 
+ // add message to chat
   useEffect(() => {
     navigation.setOptions({ title: name })
     setMessages([
@@ -21,7 +23,7 @@ const Chat = ({ route, navigation }) => {
       },
       {
         _id: 2,
-        text: 'This is a system message',
+        text: "You've entered the chat",
         createdAt: new Date(),
         system: true,
       },
@@ -33,6 +35,7 @@ const Chat = ({ route, navigation }) => {
     setMessages(previousMessages => GiftedChat.append(previousMessages, newMessages))
   }
 
+  // bubble component
   const renderBubble = (props) => {
     return <Bubble
       {...props}
@@ -58,7 +61,8 @@ const Chat = ({ route, navigation }) => {
           name
         }}
       />
-      {Platform.OS === 'android' ? <KeyboardAvoidingView behavior="height" /> : null}
+      {Platform.OS === 'android' ? <KeyboardAvoidingView behavior="height" /> : <KeyboardAvoidingView behavior="padding" />}
+
     </View>
   )
 }
