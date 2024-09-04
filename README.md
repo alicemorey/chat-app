@@ -57,3 +57,4 @@ download and connect the expo app on your mobile device
 Android Studio (android)
 Xcode (iOS)
 
+By Alice Morey
