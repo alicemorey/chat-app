@@ -9,7 +9,8 @@ The objective of this project is to build a chat app for mobile devices using Re
 - A page displaying the conversation, as well as an input field and submit button.
 - The chat must provide users with two additional communication features: sending images and location data. 
 - Data gets stored online and offline. Technical Requirements 
-- The app must be written in React Native. ● The app must be developed using Expo.
+- The app must be written in React Native. 
+- The app must be developed using Expo.
 - The app must be styled according to the given screen design. 
 - Chat conversations must be stored in Google Firestore Database. 
 - The app must authenticate users anonymously via Google Firebase authentication. 
@@ -49,7 +50,7 @@ The objective of this project is to build a chat app for mobile devices using Re
 
 **Start the expo project**
 
-npx expo start
+- `npx expo start`
 
 **Testing Options**
 
