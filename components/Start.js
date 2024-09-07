@@ -2,6 +2,25 @@ import React, { useState } from 'react';
 import { StyleSheet, View, TextInput, Text, TouchableOpacity, ImageBackground } from 'react-native';
 import { KeyboardAvoidingView, Platform } from 'react-native';
 
+// import getAuth
+import { getAuth, signInAnonymously } from "firebase/auth";
+
+
+const auth = getAuth();
+const signInUser = () => {
+  signInAnonymously(auth)
+    .then(result => {
+      navigation.navigate('Chat', { 
+        userId: result.user.uid,
+        name: name, 
+        backgroundColor: backgroundColor 
+      });
+    })
+    .catch((error) => {
+      console.log('Error signing in anonymously:', error);
+    });
+};
+
 
 // start component
 const Start = ({ navigation }) => {
@@ -13,6 +32,7 @@ const Start = ({ navigation }) => {
     const handleStartChat = () => {
         if (name.trim()) {
             navigation.navigate('Chat', { name: name, backgroundColor: backgroundColor });
+            signInUser();
           }
         };
 
