@@ -27,7 +27,7 @@ const db = getFirestore(app);
 
 const Stack = createStackNavigator();
 
-// App component
+
 const App = () => {
   return (
     <NavigationContainer>
@@ -37,10 +37,12 @@ const App = () => {
           name="Chat" 
           component={Chat} 
           options={({ route }) => ({ title: route.params.name })}
+          initialParams={{ db: db }}
         />
       </Stack.Navigator>
     </NavigationContainer>
   );
-};
+}
 
 export default App;
+

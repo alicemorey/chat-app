@@ -4,9 +4,9 @@ import { Bubble, GiftedChat } from "react-native-gifted-chat";
 import { collection, query, orderBy, onSnapshot, addDoc } from "firebase/firestore";
 
 // chat component
-const Chat = ({ route, navigation, db }) => {
+const Chat = ({ route, navigation }) => {
   const [messages, setMessages] = useState([]);
-  const { name, userId, background } = route.params;
+  const { name, userId, background, db } = route.params;
 
  // add message to chat
   useEffect(() => {
