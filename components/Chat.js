@@ -6,11 +6,12 @@ import { collection, query, orderBy, onSnapshot, addDoc } from "firebase/firesto
 // chat component
 const Chat = ({ route, navigation, db }) => {
   const [messages, setMessages] = useState([]);
-  const { name, userId } = route.params;
+  const { name, userId, background } = route.params;
 
  // add message to chat
   useEffect(() => {
-    navigation.setOptions({ title: name });
+    navigation.setOptions({ title: name, color:background });
+
     const q = query(collection(db, "messages"), orderBy("createdAt", "desc"));
     
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
@@ -50,7 +51,7 @@ const Chat = ({ route, navigation, db }) => {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: background }]}>
       <GiftedChat
         messages={messages}
         renderBubble={renderBubble}
