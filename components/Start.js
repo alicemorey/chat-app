@@ -1,79 +1,90 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, TextInput, Text, TouchableOpacity, ImageBackground } from 'react-native';
+import { StyleSheet, View, TextInput, Text, TouchableOpacity, ImageBackground, Alert, Button } from 'react-native';
 import { KeyboardAvoidingView, Platform } from 'react-native';
 
 // import getAuth
 import { getAuth, signInAnonymously } from "firebase/auth";
 
+// start component
+const Start = ({ navigation }) => {
+
+  //state to set name
+  const [name, setName] = useState('');
+  //state for background color
+  const [background, setBackground] = useState('');
+
+const backgroundImage= require('../img/BackgroundImage.png');
 
 const auth = getAuth();
+
 const signInUser = () => {
   signInAnonymously(auth)
     .then(result => {
-      navigation.navigate('Chat', { 
-        userId: result.user.uid,
+      navigation.navigate('Chat', { userId: result.user.uid,
         name: name, 
-        backgroundColor: backgroundColor 
-      });
+        background: background});
+        Alert.alert ("Signed in successfully!");
+      
     })
     .catch((error) => {
-      console.log('Error signing in anonymously:', error);
-    });
+      Alert.alert ("Unable to sign in, try later!");
+    })
 };
 
 
-// start component
-const Start = ({ navigation }) => {
-    const [name, setName] = useState('');
-    const [backgroundColor, setBackgroundColor] = useState('#090C08');
-
-  const colors = ['#090C08', '#474056', '#8A95A5', '#B9C6AE'];
-    // handle color selection
-    const handleStartChat = () => {
-        if (name.trim()) {
-            navigation.navigate('Chat', { name: name, backgroundColor: backgroundColor });
-            signInUser();
-          }
-        };
-
   return (
     // add a background image to the start screen
+    <View style={styles.container}>
+    <Text style={styles.title}>Chat App</Text>
     <ImageBackground
-      source={require('../img/BackgroundImage.png')}
-      resizeMode="cover"
-      style={styles.backgroundImage}
-    >
-    <KeyboardAvoidingView 
-      style={styles.container} 
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-    >
-      <Text style={styles.title}>Chat App</Text>
+      source={backgroundImage} resizeMode="cover" styles={styles.image}>
+      <Text>Hello {name}</Text>
        <TextInput
-        style={styles.input}
-        placeholder="Enter your name"
+        style={styles.TextInput}
         value={name}
         onChangeText={setName}
+        placeholder="Enter your name"
       />
       
-      <Text style={styles.colorSelectionText}>Choose Background Color:</Text>
-        <View style={styles.colorSelection}>
-          {colors.map((color) => (
+      <View style={styles.buttonContainer}>
             <TouchableOpacity
-              key={color}
-              style={[
-                styles.colorButton,
-                { backgroundColor: color },
-                backgroundColor === color && styles.selectedColor,
-              ]}
-              onPress={() => setBackgroundColor(color)}
+              style={[styles.colorButton,
+                { backgroundColor: '#FF5733' }]}
+              onPress={() => setBackground("#FF5733")}
             />
-          ))}
-          </View>
+          <Text style={styles.buttonText}>Set Colour!</Text>
       <TouchableOpacity style={styles.button} onPress={handleStartChat}>
     <Text style={styles.buttonText}>Start Chatting</Text>
     </TouchableOpacity>
-    </KeyboardAvoidingView>
+    <TouchableOpacity
+      style={[styles.colorButton, {backgroundColor: '#90EE90'}]}
+      onPress={ ()=> setBackground("#90EE90")}
+      >
+        <Text style={styles.buttonText}>
+          Set Colour!
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+      style={[styles.colorButton, {backgroundColor: '#ADD8E6'}]}
+      onPress={ ()=> setBackground("#ADD8E6")}
+      >
+        <Text style={styles.buttonText}>
+          Set Colour!
+        </Text>
+      </TouchableOpacity>
+      </View>
+      <Button
+      title="Go to chat"
+      onPress={()=> {
+      if (name === '') {
+        Alert.alert('Please enter your name');
+      } else {
+        signInUser();
+      }
+      }}
+      />
     </ImageBackground>
+    </View>
   );
 };
 
@@ -95,7 +106,7 @@ const styles = StyleSheet.create({
       fontWeight: 'bold',
       marginBottom: 20,
     },
-    input: {
+    textInput: {
       width: '100%',
       height: 40,
       borderWidth: 1,
