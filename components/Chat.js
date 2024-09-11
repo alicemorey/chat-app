@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { StyleSheet, View, Platform, KeyboardAvoidingView } from 'react-native';
 import { Bubble, GiftedChat, InputToolbar } from "react-native-gifted-chat";
 import { collection, query, orderBy, onSnapshot, addDoc } from "firebase/firestore";
+import { useNetInfo }from '@react-native-community/netinfo';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
@@ -10,10 +11,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const Chat = ({ route, navigation, isConnected }) => {
   const [messages, setMessages] = useState([]);
   const { name, userId, background, db } = route.params;
-  const connectionStatus = useNetInfo();
+  const netInfo= useNetInfo();
 
   const renderInputToolbar = (props) => {
-    if (isConnected === true) {
+    if (netInfo.isConnected === true) {
       return <InputToolbar {...props} />;
     } else {
       return null;
@@ -26,10 +27,11 @@ const Chat = ({ route, navigation, isConnected }) => {
     // set chat title
     navigation.setOptions({ title: name, color: background });
  
-    let unsubscribe;
-    if (isConnected === false) {
+    let unsubscribe=()=>{};
+
+    if (netInfo.isConnected){
       const q = query(collection(db, "messages"), orderBy("createdAt", "desc"));
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+    unsubscribe = onSnapshot(q, (querySnapshot) => {
     const messagesFirestore =
         querySnapshot.docs.map((doc) => ({
           _id: doc.id,
@@ -41,13 +43,17 @@ const Chat = ({ route, navigation, isConnected }) => {
         setMessages(messagesFirestore);
     });
   }else{
-    loadCacheMessages();
+    loadCachedMessages();
   }
 
     // Clean up the listener
-    return () => unsubscribe();
-  }, [isConnected]);
-
+    return () => {
+      if (typeof unsubscribe ==='function') {
+        unsubscribe();
+      }
+    };
+  }, [netInfo.isConnected]);
+  
   const cacheMessages = async (messagesToCache) => {
     try {
       await AsyncStorage.setItem('messages', JSON.stringify(messagesToCache));
