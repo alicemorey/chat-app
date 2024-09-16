@@ -1,6 +1,8 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { getFirestore, disableNetwork, enableNetwork } from "firebase/firestore";
+
 
 // import components
 import Start from './components/Start';
@@ -8,7 +10,6 @@ import Chat from './components/Chat';
 
 // import firebase
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCcg0XaOLEvP_STssHOvLszDuRmgTqtjDY",
@@ -29,16 +30,30 @@ const Stack = createStackNavigator();
 
 
 const App = () => {
+  const connectionStatus = useNetInfo();
+  const [isConnected, setIsConnected] = useState(null);
+
+  useEffect(() => {
+    setIsConnected(connectionStatus.isConnected);
+    if (connectionStatus.isConnected === false) {
+      console.log("Connection lost!");
+      disableNetwork(db);
+    } else if (connectionStatus.isConnected === true) {
+      console.log("Connection restored!");
+      enableNetwork(db);
+    }
+  }, [connectionStatus.isConnected]);
+
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Start">
         <Stack.Screen name="Start" component={Start} />
         <Stack.Screen 
           name="Chat" 
-          component={Chat} 
           options={({ route }) => ({ title: route.params.name })}
-          initialParams={{ db: db }}
-        />
+          >
+          {props =><Chat {...props} isConnected={isConnected} db={db} />}
+          </Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>
   );
