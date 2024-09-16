@@ -6,6 +6,7 @@ import { useNetInfo }from '@react-native-community/netinfo';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
+import CustomActions from './CustomActions';
 
 // chat component
 const Chat = ({ route, navigation, isConnected }) => {
@@ -92,7 +93,11 @@ const Chat = ({ route, navigation, isConnected }) => {
         }
       }}
     />
-  }
+  };
+
+  const renderCustomActions = ({props} ) => {
+    return <CustomActions {...props } />;
+  };
 
   return (
     <View style={[styles.container, { backgroundColor: background }]}>
@@ -100,11 +105,13 @@ const Chat = ({ route, navigation, isConnected }) => {
         messages={messages}
         renderBubble={renderBubble}
         renderInputToolbar={renderInputToolbar}
+        renderActions={renderCustomActions}
         onSend={messages => onSend(messages)}
         user={{
           _id: userId,
           name: name
         }}
+        
       />
       {Platform.OS === 'android' ? <KeyboardAvoidingView behavior="height" /> : <KeyboardAvoidingView behavior="padding" />}
 
