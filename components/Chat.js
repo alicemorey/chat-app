@@ -1,10 +1,10 @@
 
 // react native & apis
 import { useState, useEffect } from "react";
-import { StyleSheet, View, Platform, KeyboardAvoidingView } from 'react-native';
+import { StyleSheet, View, Platform, KeyboardAvoidingView, TouchableOpacity } from 'react-native';
 import MapView from 'react-native-maps';
+import { Linking } from 'react-native';
 
-import { v4 as uuidv4 } from 'uuid';
 
 // gifted chat components
 import { Bubble, GiftedChat, InputToolbar } from "react-native-gifted-chat";
@@ -84,7 +84,12 @@ const Chat = ({ db, route, navigation, isConnected }) => {
     }
   };
  
-   
+  // define openMaps 
+  const openMaps = (latitude, longitude) => {
+    const url = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
+    Linking.openURL(url);
+  };
+  
 
 
  //Toolbar component
@@ -128,7 +133,7 @@ const Chat = ({ db, route, navigation, isConnected }) => {
     if (currentMessage.location) {
       return (
         <TouchableOpacity
-          onPress={openMaps}
+          onPress={()=>openMaps(currentMessage.location.latitude, currentMessage.location.longitude)}
           style={{
             backgroundColor: "gray",
             width: 200,

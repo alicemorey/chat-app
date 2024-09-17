@@ -77,10 +77,7 @@ const CustomActions = ({
 
 
   const pickImage = async () => {
-    // Request permission to access media library
     let permissions = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-    // Check if permission is granted
     if (permissions?.granted) {
       // Launch the image library to select an image
       let result = await ImagePicker.launchImageLibraryAsync();
@@ -95,33 +92,29 @@ const CustomActions = ({
   };
     
       const takePhoto = async () => {
-        // Request permission to access the camera
-        let permissions = await ImagePicker.requestCameraPermissionsAsync();
-        
+        let permissions = await ImagePicker.requestCameraPermissionsAsync();   
         if (permissions?.granted) {
 
          // launch camera 
         let result = await ImagePicker.launchCameraAsync();
 
           if (!result.canceled) {
+            await uploadAndSendImage(result.assets[0].uri);
             console.log('uploading and uploading the image occurs here');
-          } else Alert.alert("Permissions haven't been granted.");
+          } else if (result.canceled) {
+            return;
+          } else Alert.alert("Permission access denied.");
         }
       };
     
       const getLocation = async () => {
         try {
-          // Request permission to access the location
           let permissions = await Location.requestForegroundPermissionsAsync();
-    
-          // Check if permission is granted
           if (permissions?.granted) {
             // Get the current location
             const location = await Location.getCurrentPositionAsync({});
-    
-            // Check if location data is available
             if (location) {
-              // Format the message with the correct data (no undefined values)
+              // Format the message with the correct data 
               const locationMessage = {
                 _id: uuidv4(),
                 text: "",
