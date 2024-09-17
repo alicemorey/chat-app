@@ -1,59 +1,68 @@
+
+// react native & apis
 import { useState, useEffect } from "react";
 import { StyleSheet, View, Platform, KeyboardAvoidingView } from 'react-native';
+import MapView from 'react-native-maps';
+
+import { v4 as uuidv4 } from 'uuid';
+
+// gifted chat components
 import { Bubble, GiftedChat, InputToolbar } from "react-native-gifted-chat";
+
+// firebase firestore
 import { collection, query, orderBy, onSnapshot, addDoc } from "firebase/firestore";
-import { useNetInfo }from '@react-native-community/netinfo';
+import { getStorage } from "firebase/storage";
+
+// async for data caching
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-
+// custom actions comp
 import CustomActions from './CustomActions';
 
 // chat component
-const Chat = ({ route, navigation, isConnected }) => {
+const Chat = ({ db, route, navigation, isConnected }) => {
   const [messages, setMessages] = useState([]);
-  const { name, userId, background, db } = route.params;
-  const netInfo= useNetInfo();
+  const { name, userId, background} = route.params;
 
-  const renderInputToolbar = (props) => {
-    if (netInfo.isConnected === true) {
-      return <InputToolbar {...props} />;
-    } else {
-      return null;
-    }
-  };
   
+  const onSend = (newMessages) => {
+    addDoc(collection(db, "messages"), newMessages[0]);
+  };
 
+  const user = {_id:userId, name};
 
-  useEffect(() => {
-    // set chat title
-    navigation.setOptions({ title: name, color: background });
- 
-    let unsubscribe=()=>{};
+  const storage = getStorage();
 
-    if (netInfo.isConnected){
-      const q = query(collection(db, "messages"), orderBy("createdAt", "desc"));
-    unsubscribe = onSnapshot(q, (querySnapshot) => {
-    const messagesFirestore =
-        querySnapshot.docs.map((doc) => ({
-          _id: doc.id,
-          createdAt: doc.data().createdAt.toDate(),
-          text: doc.data().text,
-          user: doc.data().user
-        }));
-        cacheMessages(messagesFirestore);
-        setMessages(messagesFirestore);
+    let unsubMessages;
+    useEffect(() => {
+      navigation.setOptions({ title: name });
+      if (isConnected === true) {
+  
+        if (unsubMessages) unsubMessages();
+        unsubMessages = null;
+  
+        const q = query(collection(db, "messages"), orderBy("createdAt", "desc"));
+        unsubMessages = onSnapshot(q, (docs) => {
+          
+        let newMessages = [];
+          docs.forEach(doc => {
+            newMessages.push({
+              id: doc.id,
+              ...doc.data(),
+              createdAt: new Date(doc.data().createdAt.toMillis())
+            })
+          })
+        cacheMessages(newMessages);
+        setMessages(newMessages);
     });
-  }else{
-    loadCachedMessages();
-  }
+  }else loadCachedMessages();
+  
 
     // Clean up the listener
     return () => {
-      if (typeof unsubscribe ==='function') {
-        unsubscribe();
-      }
-    };
-  }, [netInfo.isConnected]);
+      if (unsubMessages) unsubMessages();
+    }
+  }, [isConnected])
   
   const cacheMessages = async (messagesToCache) => {
     try {
@@ -62,6 +71,7 @@ const Chat = ({ route, navigation, isConnected }) => {
       console.log('Error caching messages:', error.message);
     }
   };
+
 
   const loadCachedMessages = async () => {
     try {
@@ -74,11 +84,17 @@ const Chat = ({ route, navigation, isConnected }) => {
     }
   };
  
+   
 
-  // send message to chat
-  const onSend = (newMessages) => {
-    addDoc(collection(db, "messages"), newMessages[0])
-  }
+
+ //Toolbar component
+  const renderInputToolbar = (props) => {
+    if (isConnected === true) {
+      return <InputToolbar {...props} />;
+    } else {
+      return null;
+    }
+  };
 
   // bubble component
   const renderBubble = (props) => {
@@ -96,8 +112,47 @@ const Chat = ({ route, navigation, isConnected }) => {
   };
 
   const renderCustomActions = ({props} ) => {
-    return <CustomActions {...props } />;
+    return (
+    <CustomActions 
+    {...props} 
+    storage={storage} 
+    userID={user._id} 
+    onSend={onSend} 
+    name={name}
+    />
+    );
   };
+
+  const renderCustomView = (props) => {
+    const { currentMessage} = props;
+    if (currentMessage.location) {
+      return (
+        <TouchableOpacity
+          onPress={openMaps}
+          style={{
+            backgroundColor: "gray",
+            width: 200,
+            height: 150,
+            borderRadius: 13,
+          }}
+        >
+          <MapView
+            style={{width: 150,
+              height: 100,
+              borderRadius: 13,
+              margin: 3}}
+            region={{
+              latitude: currentMessage.location.latitude,
+              longitude: currentMessage.location.longitude,
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
+            }}
+          />
+          </TouchableOpacity>
+      );
+    }
+    return null;
+  }
 
   return (
     <View style={[styles.container, { backgroundColor: background }]}>
@@ -106,10 +161,11 @@ const Chat = ({ route, navigation, isConnected }) => {
         renderBubble={renderBubble}
         renderInputToolbar={renderInputToolbar}
         renderActions={renderCustomActions}
-        onSend={messages => onSend(messages)}
+        renderCustomView={renderCustomView}
+        onSend={(messages) => onSend(messages)}
         user={{
           _id: userId,
-          name: name
+          name
         }}
         
       />
@@ -126,5 +182,3 @@ const styles = StyleSheet.create({
 });
 
 export default Chat;
-
-
