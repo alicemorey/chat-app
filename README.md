@@ -82,49 +82,46 @@ git clone h
 
 cd chat-app
 
-Install dependencies:
+**Install dependencies**
 
 - `npm install`
 
 **Start the application**
 
 - `npm start`
+
 **Firebase Configuration**
 
-Firebase Configuration: Sign in to Google Firebase.
+- Sign in to Google Firebase
+- Create a new Firebase project
 
-Create a new Firebase project.
-Set up Firestore Database in production mode.
-Adjust Firestore Rules to allow read and write access.
-Configure Firebase Storage (optional).
-App Integration
-Register your app in the Firebase Console.
+- Set up Firestore Database in production mode.
+- Adjust Firestore Rules to allow read and write access.
+- Configure Firebase Storage (optional).
+- App Integration
+- Register your app in the Firebase Console.
 
-Install Firebase SDK:
+**Install Firebase SDK**
 
-npm install firebase
+- `npm install firebase``
+
 Initialize Firebase in your App.js file.
 
-Prerequisites
+**Prerequisites**
+
 Download the Expo Go app on your mobile device.
 Open the app.
 Connect your device to the same network as your development machine.
 Run npx expo start on your development machine.
 Alternatively, you can scan the QR code with the Expo Go app.
-Usage
-Enter your name and select a background color to start chatting.
-Send text messages, share images, or share your current location.
-Access and view messages offline, ensuring your chat history is always available.
-Deployment
-The Chat App is still under development.
 
-Contributing
-Contributions are welcome! Please fork the repository and create a pull request with your changes. Make sure to follow the code style and include tests for new features
+**Usage**
+Enter your name and select a background color to start chatting.
+Send text messages, share images, or share your current location, take a picture and send it.
+Access and view messages offline, ensuring your chat history is always available.
 
 **Testing Options**
 
 download and connect the expo app on your mobile device
 Android Studio (android)
 Xcode (iOS)
-
-By Alice Morey
